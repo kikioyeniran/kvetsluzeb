@@ -154,7 +154,7 @@ export default ({config, db}) => {
         })
     });
 
-    router.patch('/resetPassword/:token', (req, res)=>{
+    api.patch('/resetPassword/:token', (req, res)=>{
 
         // get user based on the token
         const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')

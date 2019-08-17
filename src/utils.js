@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from './config';
+// import config from './config';
 
 module.exports = {
     validateToken: (req, res, next) => {
@@ -14,7 +14,7 @@ module.exports = {
 
             try {
                 // verifying to make sure that the token hasnt expired and has been issued by us
-                result = jwt.verify(token, config.secret, options); 
+                result = jwt.verify(token, process.env.PASSWORD_HASH_SECRET , options); 
 
                 // passing the decoded token to the request object
                 req.decoded = result;

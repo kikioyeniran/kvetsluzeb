@@ -19,7 +19,7 @@ app.server = http.createServer(app);
 // middleware
 // parse application/json
 app.use(bodyParser.json({
-  limit: config.bodyLimit
+  limit: process.env.BODYLIMIT
 }));
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -50,7 +50,7 @@ app.use(expressValidator({
 // routes for API version 1
 app.use('/api/v1', routes);
 
-app.server.listen(config.port);
+app.server.listen(process.env.PORT);
 console.log(`started on port:${app.server.address().port}`);
 
 export default app;

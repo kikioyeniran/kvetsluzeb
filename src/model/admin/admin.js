@@ -39,7 +39,7 @@ AdminSchema.methods.createPasswordResetToken = function() {
     return resetToken;
 }
 
-ClientSchema.methods.correctPassword =  function(
+AdminSchema.methods.correctPassword =  function(
     candidatePassword,
     userPassword
   ) {

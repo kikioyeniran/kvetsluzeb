@@ -8,13 +8,19 @@ import { validateToken } from '../../utils';
 import Client from '../../model/client/client';
 import ClientDetails from '../../model/client/clientDetails';
 
+import Cleaner from '../../model/cleaner/cleaner'
+import CleanerDetails from '../../model/cleaner/cleanerDetails';
+import ClientWallet from '../../model/client/clientWallet';
+import Transactions from '../../model/allTransactions';
+import CleaningSchedule from '../../model/cleaningSchedule'
+
 // let Client =  require('../../models/client');
 // let ClientDetails =  require('../../models/clientDetails');
-let Cleaner =  require('../../models/cleaner');
-let CleanerDetails =  require('../../models/cleanerDetails');
-let ClientWallet =  require('../../models/clientWallet');
-let Transactions =  require('../../models/allTransactions');
-let CleaningSchedule = require('../../models/cleaningSchedule');
+// let Cleaner =  require('../../models/cleaner');
+// let CleanerDetails =  require('../../models/cleanerDetails');
+// let ClientWallet =  require('../../models/clientWallet');
+// let Transactions =  require('../../models/allTransactions');
+// let CleaningSchedule = require('../../models/cleaningSchedule');
 
 export default ({config, db}) => {
     let api  = Router();
@@ -212,7 +218,7 @@ export default ({config, db}) => {
     });
 
 
-    router.post('/pay', validateToken, (req, res)=>{
+    api.post('/pay', validateToken, (req, res)=>{
         
         let amount = req.body.totalPay * 100;
       

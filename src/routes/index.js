@@ -11,7 +11,7 @@ import bookingRequest from '../controller/booking/request';
 import client from '../controller/client/client';
 import clientAccount from '../controller/client/account'
 import Admin from '../controller/admin/account';
-
+import cleaner from '../controller/cleaner/cleaner'; 
 
 let router = express();
 
@@ -26,7 +26,9 @@ initializeDB(db => {
 
     // router.use('/cleaner/account', cleanerAccount({config, db}));
     router.use('/account/cleaner', cleanerAccount({config, db}))
-    router.use('/booking', bookingRequest({config, db}));
+    // router.use('/booking', bookingRequest({config, db}));
+    router.use('/cleaner', cleaner({config, db}));
+
     
     router.use('/client', client({config, db}));
     router.use('/client/account', clientAccount({config, db}));
