@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-
+import mongoose from 'mongoose';
 
 //All Transactions schema
 const AllTransactionsSchema = mongoose.Schema({

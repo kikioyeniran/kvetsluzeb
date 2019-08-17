@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 //Cleaning Schedule Schema
 let CleaningScheduleSchema = mongoose.Schema({

@@ -6,6 +6,9 @@ import logger from 'morgan';
 import path from 'path';
 import expressValidator from 'express-validator';
 
+const dotnev = require('dotenv');
+dotnev.config({path: './config.env'});
+
 // importing the config and routes folders
 import config from './config';
 import routes from './routes';

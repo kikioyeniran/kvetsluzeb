@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 //Cleaner Detils Schema
 let RequestSchema = mongoose.Schema({

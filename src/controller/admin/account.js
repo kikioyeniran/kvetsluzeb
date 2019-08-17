@@ -4,8 +4,11 @@ import bcrypt from 'bcryptjs';
 
 import Admin from '../../model/admin/admin';
 
+const sendEmail = require('../../util/email');
+
 export default ({config, db}) => {
     let api = Router();
+
 
     //Register Processes
     api.post('/signup', (req, res)=>{
@@ -40,11 +43,20 @@ export default ({config, db}) => {
             newUser.password = hash;
             newUser.save((err)=>{
                 if(err){
-                    console.log(err);
-                    return;
+                    let status = 400;
+                    let result = {};
+                    let error = err;
+                    result.status = status;
+                    result.error = error;
+                    res.status(status).send(result);
+                    
                 }else{
-                    req.flash('success', 'You are now registered and can login');
-                    res.redirect('/admin/login');
+                    let status = 200;
+                    let result = {};
+                    let message = 'You are now registered and can login';
+                    result.status = status;
+                    result.error = error;
+                    res.status(status).send(result);
                 }
             })
         });
@@ -109,7 +121,78 @@ export default ({config, db}) => {
         result.status = status;
         result.message = 'Successfully logged out';
         res.status(status).send(result);
+    });
+
+    api.post('/forgotPassword', (req, res) =>{
+        Admin.findOne({email: req.body.email}, (err, user) =>{
+            if (err) {
+                res.status(404).send(err);
+            }
+            // generate random token
+            const resetToken = user.createPasswordResetToken();
+            // await user.save()
+            user.save({validateBeforeSave: false})
+    
+            const resetUrl = `${req.protocol}://${req.get('host')}/admin/pswd/resetpswd/${resetToken}`
+            const message = `Forgot Password? Submit a PATCH request with your new Password and passwordConfirn to: ${resetUrl}.\n If you didnt forget your password, please ignore this email!`
+            try {
+                const sendEmail = ({
+                    email: user.email,
+                    subject: 'Password Reset Link (Valid for 10Mins)',
+                    message: message
+                })
+                res.status(200).json({
+                    status: 'success',
+                    message: 'Token sent to mail'
+                })
+            } catch(err) {
+                user.passwordResetToken = undefined;
+                user.passwordResetExpires = undefined;
+                user.save({validateBeforeSave: false})
+                console.log(err);
+            }
+        })
+    });
+
+    router.patch('/resetPassword/:token', (req, res)=>{
+
+        // get user based on the token
+        const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+        // const user =
+         Admin.findOne({passwordResetToken: hashedToken, passwordResetExpires: {$gt: Date.now()} }, (err, user) => {
+             if(err) {
+                status = 404;
+                result.status = status;
+                result.error = err;
+                res.status(status).send(result);
+             }
+    
+             user.password = req.body.password
+             user.password2 = req.body.password2
+             user.passwordResetToken = undefined;
+             user.passwordResetExpires = undefined;
+    
+             user.save(err => {
+                 if(err) {
+                    status = 400;
+                    result.status = status;
+                    result.error = err;
+                    res.status(status).send(result);
+                 }else{
+                    status = 404;
+                    result.status = status;
+                    result.message = 'Password Changed'; 
+                    res.status(status).send(result);
+                }
+             })
+    
+            //  Redirect the user to login
+    
+         });
+        // if token has not expired and user exists we set the new password
     })
+
+
 
     return api;
 

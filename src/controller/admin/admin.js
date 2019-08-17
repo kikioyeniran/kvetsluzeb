@@ -16,7 +16,7 @@ import Admin from '../../model/admin/admin';
 export default ({config, db}) => {
     let api = Router();
 
-    // 'api/v1/admin/:id'
+    // 'api/v1/admin/:id' -- for adding the 
     api.get('/:id', (req, res) => {
         Admin.findById(req.params.id, (err, admin) =>{
             let statusCode = 200;

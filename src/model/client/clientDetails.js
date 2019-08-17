@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 //Client Detils Schema
 let ClientDetailsSchema = mongoose.Schema({
@@ -8,7 +8,7 @@ let ClientDetailsSchema = mongoose.Schema({
     },
     bedrooms:{
         type: Number,
-        // required: true
+        required: true
     },
     bathrooms:{
         type: Number,
@@ -16,15 +16,15 @@ let ClientDetailsSchema = mongoose.Schema({
     },
     extraTasks:{
         type: Array,
-        // required: true
+        required: true
     },
     dateFirstClean:{
         type: Date,
-        // required: true
+        required: true
     },
     cleaningHours:{
         type: Number,
-        // required: true
+        required: true
     },
     moreCleaningHours:{
         type: Number
@@ -44,7 +44,7 @@ let ClientDetailsSchema = mongoose.Schema({
     },
     cleaningFrequency:{
         type: String,
-        // required: true
+        required: true
     },
     mobileNumber:{
         type: Number,
