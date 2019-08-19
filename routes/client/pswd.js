@@ -28,6 +28,7 @@ router.post('/forgotpswd',  (req,res) =>{
         const resetUrl = `${req.protocol}://${req.get('host')}/client/pswd/resetpswd/${resetToken}`
         const message = `Forgot Password? Submit a PATCH request with your new Password and passwordConfirn to: ${resetUrl}.\n If you didnt forget your password, please ignore this email!`;
 
+
         try {
           const msg = {
             to: user.email,
@@ -35,7 +36,7 @@ router.post('/forgotpswd',  (req,res) =>{
             subject: 'Password Reset (Valid for 10mins)',
             text: message
           }
-            
+
             res.status(200).json({
                 status: 'success',
                 message: 'Token sent to mail'
