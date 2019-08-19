@@ -90,7 +90,7 @@ router.get('/wallet/:id', (req, res) =>{
                     pending: pending,
                     stripePublishableKey: keys.stripePublishableKey
                 });
-            })
+             })
         });
     });
 });
@@ -101,7 +101,14 @@ router.get('/transactions/:id', (req, res) =>{
         //console.log(client)
         var query = {clientID: client.clientID};
         ClientDetails.find((query), (err, client_details)=>{
-            //console.log(client_details[0]);
+            /if(err){
+                console.log(err);
+                return;
+            }else {
+                console.log('found and updated');
+                req.flash('success', 'Account Updated');
+                res.redirect('/client/dashboard/home/'+req.params.id);
+            }/console.log(client_details[0]);
             AllTransactions.find((query), (err, transactions)=>{
                 var noTransaction = false;
                 if(empty(transactions)){

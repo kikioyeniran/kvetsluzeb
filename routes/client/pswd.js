@@ -4,6 +4,10 @@ const sendEmail  = require('../email');
 //Bring in Client Models
 let Client =  require('../../models/client');
 
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey('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');
+
+
 router.get('/forgotpswd', (req, res) =>{
     res.render('client/forgotpswd');
 });
@@ -22,13 +26,16 @@ router.post('/forgotpswd',  (req,res) =>{
         user.save({validateBeforeSave: false})
 
         const resetUrl = `${req.protocol}://${req.get('host')}/client/pswd/resetpswd/${resetToken}`
-        const message = `Forgot Password? Submit a PATCH request with your new Password and passwordConfirn to: ${resetUrl}.\n If you didnt forget your password, please ignore this email!`
+        const message = `Forgot Password? Submit a PATCH request with your new Password and passwordConfirn to: ${resetUrl}.\n If you didnt forget your password, please ignore this email!`;
+
         try {
-            const sendEmail = ({
-                email: user.email,
-                subject: 'Password Reset Link (Valid for 10Mins)',
-                message: message
-            })
+          const msg = {
+            to: user.email,
+            from: '[no-reply]@kvetslueb.com.ng',
+            subject: 'Password Reset (Valid for 10mins)',
+            text: message
+          }
+            
             res.status(200).json({
                 status: 'success',
                 message: 'Token sent to mail'
