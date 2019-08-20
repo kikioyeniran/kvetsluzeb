@@ -37,10 +37,17 @@ router.post('/forgotpswd',  (req,res) =>{
             text: message
           }
 
+          sgMail.send(msg, (err, info)=>{
+            if(err){
+              res.status(500).send(err);
+            }
             res.status(200).json({
-                status: 'success',
-                message: 'Token sent to mail'
-            })
+              status: 'success',
+              message: 'Token sent to mail'
+            });
+
+          })
+
         } catch(err) {
             user.passwordResetToken = undefined;
             user.passwordResetExpires = undefined;
