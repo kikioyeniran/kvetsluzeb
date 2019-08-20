@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto')
 const sendEmail  = require('../email');
+const async = require('async');
 //Bring in Client Models
 let Client =  require('../../models/client');
 
