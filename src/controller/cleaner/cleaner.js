@@ -37,7 +37,7 @@ export default ({config, db}) =>{
         let clientID = req.params.clientID;
         let result = {};
         let statusCode = 200;
-    
+
         CleaningSchedule.findById(scheduleID, (err, schedule)=>{
             if(err){
                 result.error = err;
@@ -112,9 +112,11 @@ export default ({config, db}) =>{
                                             }else {
                                                 //console.log('wallet found and updated');
                                                 //req.flash('success', 'Account Updated');
+                                                let message = 'Successful please redirect to User dashboard'
+
                                                 result.error = err;
                                                 result.statusCode = statusCode;
-                                                result.message = 'Successful please redirect to User dashboard'
+                                                result.message = message
                                                 res.status(statusCode).send(result);
                                                 // res.redirect('/cleaner/dashboard/cleaner_calendar/'+cleanerID);
                                             }
@@ -123,14 +125,14 @@ export default ({config, db}) =>{
                                 });
                             })
                         })
-    
-    
+
+
                     }
                 });
             }
         });
     })
-    
+
     // **********************************************
     // ******* CLEANER WALLET DETAILS ***************
     // **********************************************
@@ -144,7 +146,7 @@ export default ({config, db}) =>{
         wallet.bank = req.body.bank;
         wallet.acctNumber = req.body.acctNumber;
         let query = {cleanerID : req.params.cleanerID}
-    
+
         CleanerWallet.updateOne(query, wallet, (err) =>{
             if(err){
                 console.log(err);
@@ -157,7 +159,7 @@ export default ({config, db}) =>{
         });
     });
 
-    
+
 //Edit Request and create schedule Process
 api.get('/:clientID/:cleanerID/:requestID', (req, res) =>{
     let clientID = req.params.clientID;
@@ -259,10 +261,11 @@ api.get('/:clientID/:cleanerID/:requestID', (req, res) =>{
                                         result.statusCode = 400;
                                         res.status(statusCode).send(result);
                                     }else{
-                                        result.message = 'Cleaning Request Accepted';
+                                        let message = 'Cleaning Request Accepted'
+                                        result.message = message ;
                                         result.statusCode = 400;
                                         res.status(statusCode).send(result);
-                                        
+
                                         //console.log(cleanerID);
 
                                         // TODO: Ask Sir KIKI what this next line is for

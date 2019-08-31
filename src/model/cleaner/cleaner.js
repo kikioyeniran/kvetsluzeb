@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const Schema = mongoose.Schema; 
+const Schema = mongoose.Schema;
 
 
 const CleanerSchema = Schema({
@@ -11,23 +11,24 @@ const CleanerSchema = Schema({
     },
     email:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password:{
         type: String,
         required: true
     },
-    passwordConfirm: {
-        type: String,
-        required: [true, 'Please confirm your password'],
-        validate: {
-          // This only works on CREATE and SAVE!!!
-          validator: function(el) {
-            return el === this.password;
-          },
-          message: 'Passwords are not the same!'
-        }
-      },
+    // passwordConfirm: {
+    //     type: String,
+    //     required: [true, 'Please confirm your password'],
+    //     validate: {
+    //       // This only works on CREATE and SAVE!!!
+    //       validator: function(el) {
+    //         return el === this.password;
+    //       },
+    //       message: 'Passwords are not the same!'
+    //     }
+    //   },
     passwordResetToken: String,
     passwordResetExpires: Date
 
@@ -37,7 +38,7 @@ CleanerSchema.methods.createPasswordResetToken = function() {
     const resetToken = crypto.randomBytes(32).toString('hex');
     this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     console.log({resetToken}, this.passwordResetToken);
-    
+
     this.passwordResetExpires = Date.now() + 10*60*1000; //10mins
     return resetToken;
 }

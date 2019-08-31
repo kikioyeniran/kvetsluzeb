@@ -12,13 +12,13 @@ import { validateToken } from '../../utils';
 import config from '../../config'
 import sendEmail from '../../util/email';
 
-// importing the models 
+// importing the models
 import Cleaner from '../../model/cleaner/cleaner';
 import CleanerDetails from '../../model/cleaner/cleanerDetails';
 import ClientDetails from '../../model/client/clientDetails';
 import Requests from '../../model/booking/requests';
 import CleaningSchedule from '../../model/cleaningSchedule';
-import Wallet from '../../model/cleaner/cleanerWallet'
+import CleanerWallet from '../../model/cleaner/cleanerWallet'
 
 
 
@@ -29,8 +29,7 @@ export default ({config, db}) => {
     // ******* CLEANER AUTHENTICATION ***********
     // ******************************************
 
-    // '/api/v1/account/cleaner/signup'    
-    
+    // '/api/v1/account/cleaner/signup'
     api.post('/signup', (req, res)=>{
         // console.log('submitted');
         // Set The Storage Engine
@@ -40,7 +39,7 @@ export default ({config, db}) => {
               cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
             }
           });
-    
+
           function checkFileType(files, cb){
             // Allowed ext
             const filetypes = /jpeg|jpg|png|gif|pdf/;
@@ -48,7 +47,7 @@ export default ({config, db}) => {
             const extname = filetypes.test(path.extname(files.originalname).toLowerCase());
             // Check mime
             const mimetype = filetypes.test(files.mimetype);
-    
+
             if(mimetype && extname){
               return cb(null,true);
             } else {
@@ -63,7 +62,7 @@ export default ({config, db}) => {
             checkFileType(file, cb);
         }
         }).fields([{name: 'profilePic'}, {name: 'nationalID'}, {name: 'healthInsurance'}])
-    
+
         upload(req, res, (err) => {
             if(err){
                 let result = {};
@@ -74,10 +73,10 @@ export default ({config, db}) => {
                 // console.log(err);
             } else{
                 // const username = req.body.username.toLowerCase();
-                const email = req.body.email.toLowerCase();
+                const email = req.body.email;
                 const password = req.body.password;
                 const password2 = req.body.password2;
-    
+
                 const postcode = req.body.postcode;
                 const extraTasks = req.body.extraTasks;
                 const experience = req.body.experience;
@@ -93,7 +92,7 @@ export default ({config, db}) => {
                 const nationalID = req.files['nationalID'][0].filename;
                 const healthInsurance = req.files['healthInsurance'][0].filename;
                 //const cleanerID = req.body._id;
-    
+
                 req.checkBody('email', 'Email is required').notEmpty();
                 req.checkBody('email', 'Email is not valid').isEmail();
                 req.checkBody('password', 'Password is required').notEmpty();
@@ -109,9 +108,9 @@ export default ({config, db}) => {
                 req.checkBody('profile', 'Your profile is required').notEmpty();
                 // req.checkBody('nationalID', 'Your means of identification is required').notEmpty();
                 // req.checkBody('healthInsurance', 'Your Health Insurance is required').notEmpty();
-    
+
                 let errors = req.validationErrors();
-    
+
                 let status = 200;
                 let result = {};
 
@@ -150,6 +149,11 @@ export default ({config, db}) => {
                     bcrypt.genSalt(10, (err, salt)=>{
                         bcrypt.hash(newUser.password, salt, (err, hash)=>{
                             if(err){
+                              statusCode = 500;
+                              let error = err;
+                              result.status = status;
+                              result.error = error;
+                              res.status(statusCode).send(result);
                                 console.log(err);
                             }
                             //console.log('bcrypt stage reached');
@@ -163,45 +167,44 @@ export default ({config, db}) => {
                                     result.status = status;
                                     result.error = err;
                                     res.status(status).send(result);
+                                } else {
+                                  newUserDetails.save((err) =>{
+                                      let result = {};
+                                      let status = 200;
+                                      if(err){
+                                          status = 400;
+                                          result.status = status;
+                                          result.error = err;
+                                          res.status(status).send(result);
+                                      }else {
+                                          newCleanerWallet.save((err)=>{
+                                              let result = {};
+                                              let status = 200;
+                                              if(err){
+                                                  status = 400;
+                                                  result.status = status;
+                                                  result.error = err;
+                                                  res.status(status).send(result);
+                                              }else{
+                                                  result.status = status;
+                                                  result.message = 'Successfully Created A Cleaner Account & Uploaded pictures';
+                                                  res.status(status).send(result);
+                                              }
+                                          });
+                                      }
+                                  });
                                 }
-                                result.status = status;
-                                result.message = 'Successfully created a new Cleaner Account';
-                                res.status(status).send(result);
-                                
+
+
                             })
                         });
                     });
-                    newUserDetails.save((err) =>{
-                        let result = {};
-                        let status = 200;
-                        if(err){
-                            status = 400;
-                            result.status = status;
-                            result.error = err;
-                            res.status(status).send(result);
-                        }else {
-                            newCleanerWallet.save((err)=>{
-                                let result = {};
-                                let status = 200;
-                                if(err){
-                                    status = 400;
-                                    result.status = status;
-                                    result.error = err;
-                                    res.status(status).send(result);
-                                }else{
-                                    result.status = status;
-                                    result.message = 'Successfully Uploaded pictures';
-                                    res.status(status).send(result);
-                                }
-                            });
-                        }
-                    });
+
                 }
-                console.log('upload successful');
-    
+                // console.log('upload successful');
             }
           });
-        console.log('form submitted');
+        // console.log('form submitted');
     });
 
     // api.post('/signup',  (req, res)=>{
@@ -215,14 +218,14 @@ export default ({config, db}) => {
     //     });
 
     //     const checkFileType = (files, cb) => {
-            
+
     //         // allowed file extensions
     //         const fileTypes = /jpeg|jpg|png|gif|pdf/;
-            
-    //         // checking file extensions 
+
+    //         // checking file extensions
     //         const extname = fileTypes.test(path.extname(files.originalname).toLocaleLowerCase());
 
-    //         // checking mime 
+    //         // checking mime
     //         const mimeType = fileTypes.test(files.mimeType);
 
     //         if(mimeType && extname) {
@@ -240,7 +243,7 @@ export default ({config, db}) => {
     //             checkFileType(file, cb);
     //         }
     //     }).fields([{name: 'profilePic'}, {name: 'nationalId'}, {name: 'healthInsurance'}])
-        
+
     //     // TODO: check if this code is running well because of the (err) part
     //     upload(req, res, (err)=>{
     //         if (err) {
@@ -250,7 +253,7 @@ export default ({config, db}) => {
     //             result.error = err;
     //             res.status(status).send(result);
     //             console.log(err);
-                
+
     //         } else {
     //             const {email, password, password2, postcode, extraTasks, experience, profile, fullName, mobileNumber, address, city, income } = req.body;
     //             const cleanerId = bcrypt.hashSync('fullName', 10);
@@ -333,7 +336,7 @@ export default ({config, db}) => {
     // });
 
 
-    // '/api/v1/account/cleaner/login'        
+    // '/api/v1/account/cleaner/login'
     api.post('/login', (req, res)=>{
         let result  = {};
         let status  = 200;
@@ -341,7 +344,7 @@ export default ({config, db}) => {
         const {email, password}  = req.body;
         Cleaner.findOne({email}, (err, user)=>{
             if(!err && user) {
-                // if there is no error and a user is found 
+                // if there is no error and a user is found
                 bcrypt.compare(password, user.password).then(match => {
                     if (match) {
                         status = 200;
@@ -354,7 +357,7 @@ export default ({config, db}) => {
                         const secret = config.secret;
                         const token = jwt.sign(payload, secret, options);
 
-                        // printing the token 
+                        // printing the token
                         result.token = token;
                         result.user = user;
                         result.status = status;
@@ -373,7 +376,7 @@ export default ({config, db}) => {
                 });
             } else {
                 status = 400;
-                message = 'Incorrect email or password';
+                let  message = 'Incorrect email or password';
                 result.status = status;
                 result.error = err;
                 result.message = message;
@@ -400,13 +403,13 @@ export default ({config, db}) => {
         user.save(err => {
             if (err) {
                 res.status(404).send(err);
-            } 
+            }
             res.status(201).json({
                 message: 'Successfull'
             })
         })
-        
-        
+
+
     })
 
 
@@ -417,7 +420,7 @@ export default ({config, db}) => {
             if (err) {
                 res.status(404).send(err);
             }
-            // generate random token 
+            // generate random token
 
             const resetToken = user.createPasswordResetToken();
             // await user.save()
@@ -510,18 +513,18 @@ export default ({config, db}) => {
         let query = {cleanerID : req.params.cleanerID}
         //console.log(query);
         //console.log(req.params.cleanerID)
-    
+
         CleanerDetails.updateOne(query, cleaner, (err) =>{
             if(err){
                 result.statusCode = 401;
                 result.error = err;
                 res.status(statusCode).send(result);
-                
+
             }else {
                 result.statusCode = statusCode;
                 result.message = 'found and updated';
                 res.status(statusCode).send(result);
-                
+
                 // console.log('found and updated');
                 // req.flash('success', 'Account Updated');
                 // res.redirect('/cleaner/dashboard/home/'+req.params.id);
@@ -544,7 +547,7 @@ export default ({config, db}) => {
                 //console.log(cleaner_details[0].fullName);
                 let result = {};
                 let statusCode = 201;
-                
+
                 if (err) {
                     result.status = 404;
                     result.error = err;
@@ -582,7 +585,7 @@ export default ({config, db}) => {
             });
         });
     });
-    
+
     api.get('/cleanerInvoice/:id', (req, res) =>{
         Cleaner.findById(req.params.id, (err, cleaner) =>{
             let result = {};
@@ -601,7 +604,7 @@ export default ({config, db}) => {
             });
         });
     });
-    
+
 
     api.get('/cleanerRequests/:id', (req, res) =>{
             let result = {};
@@ -628,17 +631,17 @@ export default ({config, db}) => {
                             result.requests = request;
                             result.userDetails = cleaner_details[0] ;
                             res.status(statusCode).send(result);
-                            
+
                     }
                 })
                 // Requests.find((secondQuery), (err, request)=>{
-    
+
                 // })
-    
+
             });
         });
     });
-    
+
     api.get('/cleanerCalendar/:id', (req, res) =>{
         Cleaner.findById(req.params.id, (err, cleaner) =>{
             //console.log(req.params.id);
@@ -666,14 +669,14 @@ export default ({config, db}) => {
                                 result.userDetails = cleaner_details[0] ;
                                 result.schedules = null;
                                 res.status(statusCode).send(result);
-                                
+
                             }else
                             {
                                 CleaningSchedule.countDocuments((query2), function(err, c) {
                                     //console.log('Count is ' + c);
                                     var count = c;
                                     let newArray = [];
-    
+
                                     //console.log(typeof(count));
                                     for(var i=0; i<count; i++){
                                         let newObject = {};
@@ -698,7 +701,7 @@ export default ({config, db}) => {
                                         var nextCleanDate = date.format(nextCleanDate, 'ddd, MMM DD YYYY');
                                         newObject.currentCleanDate = currentCleanDate;
                                         newObject.lastCleanDate = lastCleanDate;
-    
+
                                         newObject.nextCleanDate = nextCleanDate;
                                         newObject.clientDetails = tempSchedule.clientDetails
                                         newObject.lastCleanStatus = lastCleanStatus;
@@ -726,7 +729,7 @@ export default ({config, db}) => {
                                });
                             }
                         }
-    
+
                 });
             });
         });
@@ -765,7 +768,7 @@ export default ({config, db}) => {
 //         ClientDetails.find((query), (err, client_details)=>{
 //             let result = {};
 //             let status = 201;
-            
+
 //             if (err) {
 //                 result.status = 404;
 //                 result.error = err;

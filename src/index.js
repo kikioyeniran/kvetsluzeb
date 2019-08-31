@@ -50,7 +50,10 @@ app.use(expressValidator({
 // routes for API version 1
 app.use('/api/v1', routes);
 
-app.server.listen(process.env.PORT);
+// app.server.listen(process.env.PORT);
+app.server.listen(8080);
+// console.log(`started on port:${app.server.address().port}`);
 console.log(`started on port:${app.server.address().port}`);
+
 
 export default app;
